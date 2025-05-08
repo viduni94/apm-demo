@@ -1,4 +1,14 @@
+require('dotenv').config();
+const apm = require('elastic-apm-node').start({
+  serviceName: process.env.ELASTIC_APM_SERVICE_NAME,
+  serverUrl: process.env.ELASTIC_APM_SERVER_URL,
+  secretToken: process.env.ELASTIC_APM_SECRET_TOKEN,
+  environment: process.env.ELASTIC_APM_ENVIRONMENT,
+  captureBody: process.env.ELASTIC_APM_CAPTURE_BODY,
+});
+
 const express = require('express');
+const { fetchData } = require('./utils/fetchData.js');
 const app = express();
 
 // Route that kicks off a deep call chain
@@ -14,42 +24,6 @@ app.get('/apm-demo/entry', async (req, res, next) => {
 async function entryPoint(id) {
   console.log('entryPoint → fetchData');
   return await fetchData(id);
-}
-
-async function fetchData(id) {
-  console.log('fetchData → processData');
-  const data = await dbLookup(id);
-  return processData(data);
-}
-
-function dbLookup(id) {
-  console.log('dbLookup → returns a Promise');
-  return new Promise((resolve) => {
-    setTimeout(() => resolve({ id, name: 'Widget' }), 50);
-  });
-}
-
-function processData(data) {
-  console.log('processData → validateData');
-  return validateData(data);
-}
-
-function validateData(data) {
-  console.log('validateData → deeperCalculation');
-  if (!data || !data.id) {
-    throw new Error(`Invalid data payload: ${JSON.stringify(data)}`);
-  }
-  return deeperCalculation(data);
-}
-
-function deeperCalculation(data) {
-  console.log('deeperCalculation → anotherLayer');
-  return anotherLayer(data.id);
-}
-
-function anotherLayer(id) {
-  console.log('anotherLayer → throwing Error');
-  throw new Error(`Processing failed for id=${id}`);
 }
 
 app.use((err, req, res, next) => {

@@ -4,6 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "dotenv": "^16.5.0",
+    "elastic-apm-node": "^4.13.0",
     "express": "^5.1.0"
   }
 }
